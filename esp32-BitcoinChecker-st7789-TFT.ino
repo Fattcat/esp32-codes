@@ -14,8 +14,8 @@
 Adafruit_ST7789 tft = Adafruit_ST7789(TFT_CS, TFT_DC, TFT_RST);
 
 // Wi-Fi údaje
-const char* ssid = "TP-Link_3997";  // Zmeňte na vašu Wi-Fi SSID
-const char* password = "59911579";  // Zmeňte na vaše Wi-Fi heslo
+const char* ssid = "YourSSID";  // Zmeňte na vašu Wi-Fi SSID
+const char* password = "YourPASS";  // Zmeňte na vaše Wi-Fi heslo
 
 // URL na API pre cenu Bitcoinu
 const char* bitcoinApiUrl = "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=eur";
