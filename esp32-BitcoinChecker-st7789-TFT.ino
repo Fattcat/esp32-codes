@@ -9,12 +9,13 @@
 #define TFT_CS   15
 #define TFT_RST  4
 #define TFT_DC   2
+#define BuzzerPin 12
 
 Adafruit_ST7789 tft = Adafruit_ST7789(TFT_CS, TFT_DC, TFT_RST);
 
 // Wi-Fi údaje
-const char* ssid = "SSID";  // Zmeňte na vašu Wi-Fi SSID
-const char* password = "PASS";  // Zmeňte na vaše Wi-Fi heslo
+const char* ssid = "TP-Link_3997";  // Zmeňte na vašu Wi-Fi SSID
+const char* password = "59911579";  // Zmeňte na vaše Wi-Fi heslo
 
 // URL na API pre cenu Bitcoinu
 const char* bitcoinApiUrl = "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=eur";
@@ -36,13 +37,15 @@ void setup() {
   tft.setTextColor(ST77XX_GREEN);
   tft.print(ssid);
 
+  pinMode(BuzzerPin, OUTPUT);
+
   // Pripojenie na Wi-Fi
   WiFi.begin(ssid, password);
   while (WiFi.status() != WL_CONNECTED) {
     delay(1000);
     Serial.println("Connecting to WiFi...");
   }
-  Serial.println("Connected to WiFi");
+  Serial.println("Pripojene k WiFi :D");
   
   // Načítanie a zobrazenie hodnoty Bitcoinu
   getBitcoinPrice();
@@ -55,6 +58,11 @@ void loop() {
 
 void getBitcoinPrice() {
   if (WiFi.status() == WL_CONNECTED) {
+    digitalWrite(BuzzerPin, HIGH);
+    delay(100);
+    digitalWrite(BuzzerPin, LOW);
+    delay(100);
+
     HTTPClient http;
     http.begin(bitcoinApiUrl);
     int httpCode = http.GET();
@@ -65,6 +73,12 @@ void getBitcoinPrice() {
       parseAndDisplayPrice(payload);
     } else {
       Serial.printf("Error on HTTP request: %s\n", http.errorToString(httpCode).c_str());
+
+      digitalWrite(BuzzerPin, HIGH);
+      delay(100);
+      digitalWrite(BuzzerPin, LOW);
+      delay(100);
+      
     }
     http.end();
   } else {
@@ -106,14 +120,30 @@ void parseAndDisplayPrice(String json) {
       tft.print("HORE o ");
       tft.print(String(change, 2)); // Zobrazenie zmeny s dvoma desatinnými miestami
       tft.print(" Eur");
+
+      for (int i = 0 ; i < 4; i++) {
+        digitalWrite(BuzzerPin, HIGH);
+        delay(1000);
+        digitalWrite(BuzzerPin, LOW);
+        delay(1000);
+      }
+
     } else if (change < 0) {
       tft.setTextColor(ST77XX_RED); // Červená pre pokles
       tft.print("DOLE o ");
       tft.print(String(abs(change), 2)); // Zobrazenie absolútnej hodnoty poklesu
       tft.print(" Eur");
+
+      for (int i = 0 ; i < 2; i++) {
+        digitalWrite(BuzzerPin, HIGH);
+        delay(1000);
+        digitalWrite(BuzzerPin, LOW);
+        delay(1000);
+      }
+
     } else {
       tft.setTextColor(ST77XX_YELLOW); // Žltá pre nezmenu
-      tft.setCursor();
+      tft.setCursor(60,190);
       tft.print("Nezmenene !");
     }
   }
