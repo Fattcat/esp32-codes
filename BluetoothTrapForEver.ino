@@ -54,7 +54,7 @@ void loop() {
     // SEND KEYSTROKE EVERY 0.3 Seconds
     // Ensures now will be phone (or connected device TRAPPED and cannot use phone enymore) 
     delay(300);
-    serial.println("");
+    Serial.println("");
   } else {
     Serial.println("Waiting for connection on BLE Device...");
   }
