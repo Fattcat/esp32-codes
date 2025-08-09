@@ -23,7 +23,6 @@ String getVendor(String mac) {
   if (mac.startsWith("00:14:22")) return "Dell";
   if (mac.startsWith("00:1A:79")) return "ASUS";
   if (mac.startsWith("F8:27:93")) return "Lenovo";
-  // Ďalšie môžeš doplniť...
   return "Neznámy výrobca";
 }
 
@@ -35,24 +34,26 @@ String macToString(const uint8_t* mac) {
   return String(buf);
 }
 
-// Prepočet RSSI -> približná vzdialenosť v metroch
+// Prepočet RSSI -> približná vzdialenosť
 float calculateDistance(int rssi) {
-  int txPower = -40;  // typická hodnota TxPower pre mobil
-  float ratio = (float)rssi / txPower;
-  float distance = pow(10, (txPower - rssi) / 20.0);
-  return distance;
+  int txPower = -40; // typická hodnota
+  return pow(10, (txPower - rssi) / 20.0);
 }
 
-// Callback pre spracovanie rámcov
+// Callback
 void snifferCallback(void* buf, wifi_promiscuous_pkt_type_t type) {
   if (type != WIFI_PKT_MGMT) return;
 
-  const wifi_promiscuous_pkt_t *pkt = (wifi_promiscuous_pkt_t*)buf;
-  const uint8_t *payload = pkt->payload;
-  int len = pkt->rx_ctrl.sig_len;
-  int rssi = pkt->rx_ctrl.rssi;
+  const wifi_promiscuous_pkt_t *ppkt = (wifi_promiscuous_pkt_t*)buf;
+  const uint8_t *payload = ppkt->payload;
+  int len = ppkt->rx_ctrl.sig_len;
+  int rssi = ppkt->rx_ctrl.rssi;
 
-  if (payload[0] != 0x40) return;  // 0x40 = Probe Request
+  // Kontrola minimálnej dĺžky rámca
+  if (len < 26) return;
+
+  // 0x40 = Probe Request
+  if (payload[0] != 0x40) return;
 
   if (rssi >= allowedSignalStrength) {
     String mac = macToString(payload + 10);
@@ -60,7 +61,7 @@ void snifferCallback(void* buf, wifi_promiscuous_pkt_type_t type) {
     String ssid = "";
 
     uint8_t ssidLen = payload[25];
-    if (ssidLen > 0 && ssidLen < 32) {
+    if (ssidLen > 0 && ssidLen < 32 && (26 + ssidLen) <= len) {
       for (int i = 0; i < ssidLen; i++) {
         ssid += (char)payload[26 + i];
       }
@@ -90,9 +91,10 @@ void setup() {
   Serial.begin(115200);
   delay(1000);
 
-  WiFi.mode(WIFI_MODE_NULL); // zastaví klasickú Wi-Fi
+  WiFi.mode(WIFI_MODE_NULL);
   esp_wifi_set_promiscuous(true);
-  esp_wifi_set_promiscuous_filter(&(wifi_promiscuous_filter_t){.filter_mask = WIFI_PROMIS_FILTER_MASK_MGMT});
+  wifi_promiscuous_filter_t filter = { .filter_mask = WIFI_PROMIS_FILTER_MASK_MGMT };
+  esp_wifi_set_promiscuous_filter(&filter);
   esp_wifi_set_promiscuous_rx_cb(&snifferCallback);
   esp_wifi_set_channel(currentChannel, WIFI_SECOND_CHAN_NONE);
 
@@ -109,6 +111,5 @@ void loop() {
     Serial.print("➡️  Prepnutý na kanál: ");
     Serial.println(currentChannel);
   }
-
-  delay(10); // malá pauza
+  delay(10);
 }
